@@ -31,10 +31,10 @@ class _MyPhoneState extends State<MyPhone> {
             children: [
               Image.asset(
                 'assets/img1.png',
-                width: 150,
-                height: 150,
+                width: 250,
+                height: 210,
               ),
-              const SizedBox(height: 25),
+              const SizedBox(height: 10),
               const Text(
                 "Phone Verification",
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),

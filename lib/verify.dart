@@ -1,5 +1,3 @@
-import 'package:farmerpoint/guide.dart';
-import 'package:farmerpoint/phone.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
@@ -14,6 +12,18 @@ class MyVerify extends StatefulWidget {
 class _MyVerifyState extends State<MyVerify> {
   final TextEditingController _pinController = TextEditingController();
   final FirebaseAuth auth = FirebaseAuth.instance;
+  String verificationId = "";
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Get the verification ID from the arguments
+    final args = ModalRoute.of(context)?.settings.arguments as Map?;
+    if (args != null) {
+      verificationId = args['verificationId'];
+    }
+  }
+
   @override
   void dispose() {
     _pinController.dispose();
@@ -46,7 +56,9 @@ class _MyVerifyState extends State<MyVerify> {
         color: const Color.fromRGBO(234, 239, 243, 1),
       ),
     );
+
     var code = "";
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -71,10 +83,10 @@ class _MyVerifyState extends State<MyVerify> {
             children: [
               Image.asset(
                 'assets/img1.png',
-                width: 150,
-                height: 150,
+                width: 250,
+                height: 210,
               ),
-              const SizedBox(height: 25),
+              const SizedBox(height: 10),
               const Text(
                 "Phone Verification",
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
@@ -92,11 +104,10 @@ class _MyVerifyState extends State<MyVerify> {
                 onChanged: (value) {
                   code = value;
                 },
-                // defaultPinTheme: defaultPinTheme,
-                // focusedPinTheme: focusedPinTheme,
-                // submittedPinTheme: submittedPinTheme,
                 showCursor: true,
-                onCompleted: (pin) {},
+                onCompleted: (pin) {
+                  code = pin;
+                },
               ),
               const SizedBox(height: 20),
               SizedBox(
@@ -110,10 +121,22 @@ class _MyVerifyState extends State<MyVerify> {
                     ),
                   ),
                   onPressed: () async {
+                    if (code.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Please enter the OTP code."),
+                        ),
+                      );
+                      return;
+                    }
+
                     try {
+                      print("Verification ID: $verificationId"); // Debug print
+                      print("Entered OTP: $code"); // Debug print
+
                       PhoneAuthCredential credential =
                           PhoneAuthProvider.credential(
-                        verificationId: MyPhone.verify,
+                        verificationId: verificationId,
                         smsCode: code,
                       );
 
@@ -130,7 +153,7 @@ class _MyVerifyState extends State<MyVerify> {
                       print(
                           "Error signing in: $e"); // Print the error for debugging
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
+                        const SnackBar(
                           content:
                               Text("Failed to verify OTP. Please try again."),
                         ),
@@ -151,7 +174,7 @@ class _MyVerifyState extends State<MyVerify> {
                       );
                     },
                     child: const Text(
-                      "Edit Phone Number ?",
+                      "Edit Phone Number?",
                       style: TextStyle(color: Colors.black),
                     ),
                   ),

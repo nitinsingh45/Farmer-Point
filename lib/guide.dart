@@ -10,6 +10,7 @@ import 'package:farmerpoint/crop_guide/onion.dart';
 import 'package:farmerpoint/crop_guide/rice.dart';
 import 'package:farmerpoint/crop_guide/sugarcane.dart';
 import 'package:farmerpoint/crop_guide/wheat.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Import FirebaseAuth
 import 'package:flutter/material.dart';
 
 class Guide extends StatefulWidget {
@@ -57,12 +58,23 @@ class _GuideState extends State<Guide> {
     });
   }
 
+  Future<void> _logout() async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.pushNamedAndRemoveUntil(context, 'phone', (route) => false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
         title: Text('Select Crop'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: _logout,
+          ),
+        ],
       ),
       body: Column(
         children: [
