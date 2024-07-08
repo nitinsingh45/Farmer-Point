@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "636068903371",
+    "project_id": "farmerpoint-99c6c",
+    "storage_bucket": "farmerpoint-99c6c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:636068903371:android:f2584b29ad975b76a3de4e",
+        "android_client_info": {
+          "package_name": "com.example.farmerpoint"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAn6MpEPKiNDIIvyqLaWmE_M7zylZyvKJ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,6 @@
 import 'package:farmerpoint/guide.dart';
+import 'package:farmerpoint/phone.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 
@@ -11,7 +13,7 @@ class MyVerify extends StatefulWidget {
 
 class _MyVerifyState extends State<MyVerify> {
   final TextEditingController _pinController = TextEditingController();
-
+  final FirebaseAuth auth = FirebaseAuth.instance;
   @override
   void dispose() {
     _pinController.dispose();
@@ -44,7 +46,7 @@ class _MyVerifyState extends State<MyVerify> {
         color: const Color.fromRGBO(234, 239, 243, 1),
       ),
     );
-
+    var code = "";
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -87,21 +89,14 @@ class _MyVerifyState extends State<MyVerify> {
               Pinput(
                 length: 6,
                 controller: _pinController,
+                onChanged: (value) {
+                  code = value;
+                },
                 // defaultPinTheme: defaultPinTheme,
                 // focusedPinTheme: focusedPinTheme,
                 // submittedPinTheme: submittedPinTheme,
                 showCursor: true,
-                onCompleted: (pin) {
-                  if (pin == '111111') {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Guide()),
-                    );
-                  } else {
-                    // Handle incorrect pin logic if needed
-                    print('Incorrect PIN');
-                  }
-                },
+                onCompleted: (pin) {},
               ),
               const SizedBox(height: 20),
               SizedBox(
@@ -114,16 +109,18 @@ class _MyVerifyState extends State<MyVerify> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  onPressed: () {
-                    String enteredPin = _pinController.text;
-                    if (enteredPin == '111111') {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Guide()),
-                      );
-                    } else {
-                      // Handle incorrect pin logic if needed
-                      print('Incorrect PIN');
+                  onPressed: () async {
+                    try {
+                      PhoneAuthCredential credential =
+                          PhoneAuthProvider.credential(
+                              verificationId: MyPhone.verify, smsCode: code);
+
+                      // Sign the user in (or link) with the credential
+                      await auth.signInWithCredential(credential);
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, "Guide", (route) => false);
+                    } catch (e) {
+                      print("wrong otp");
                     }
                   },
                   child: const Text("Verify Phone Number"),

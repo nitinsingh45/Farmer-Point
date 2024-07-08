@@ -1,14 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class MyPhone extends StatefulWidget {
   const MyPhone({Key? key}) : super(key: key);
-
+  static String verify = "";
   @override
   State<MyPhone> createState() => _MyPhoneState();
 }
 
 class _MyPhoneState extends State<MyPhone> {
   TextEditingController countryController = TextEditingController();
+  var phone = "";
 
   @override
   void initState() {
@@ -67,10 +69,13 @@ class _MyPhoneState extends State<MyPhone> {
                       style: TextStyle(fontSize: 33, color: Colors.grey),
                     ),
                     const SizedBox(width: 10),
-                    const Expanded(
+                    Expanded(
                       child: TextField(
+                        onChanged: (value) {
+                          phone = value;
+                        },
                         keyboardType: TextInputType.phone,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           border: InputBorder.none,
                           hintText: "Phone",
                         ),
@@ -90,17 +95,45 @@ class _MyPhoneState extends State<MyPhone> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     print("Button Pressed");
-                    Navigator.pushNamed(context, 'MyVerify');
+                    await FirebaseAuth.instance.verifyPhoneNumber(
+                      phoneNumber: '${countryController.text + phone}',
+                      verificationCompleted: (PhoneAuthCredential credential) {
+                        // Handle automatic verification completion
+                      },
+                      verificationFailed: (FirebaseAuthException e) {
+                        // Handle verification failure
+                        print('Verification failed: ${e.message}');
+                      },
+                      codeSent: (String verificationId, int? resendToken) {
+                        // Handle code sent
+                        Navigator.pushNamed(context, 'MyVerify', arguments: {
+                          'verificationId': verificationId,
+                        });
+                      },
+                      codeAutoRetrievalTimeout: (String verificationId) {
+                        // Handle timeout
+                      },
+                    );
                   },
                   child: const Text("Send the code"),
                 ),
               ),
               const SizedBox(height: 20),
               TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, 'Guide');
+                onPressed: () async {
+                  // This part can remain the same
+                  await FirebaseAuth.instance.verifyPhoneNumber(
+                    phoneNumber: '${countryController.text + phone}',
+                    verificationCompleted: (PhoneAuthCredential credential) {},
+                    verificationFailed: (FirebaseAuthException e) {},
+                    codeSent: (String verificationId, int? resendToken) {
+                      MyPhone.verify = verificationId;
+                    },
+                    codeAutoRetrievalTimeout: (String verificationId) {},
+                  );
+                  //Navigator.pushNamed(context, 'Guide');
                 },
                 child: const Text(
                   "Continue without login",
