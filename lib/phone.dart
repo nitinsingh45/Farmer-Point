@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class MyPhone extends StatefulWidget {
   const MyPhone({Key? key}) : super(key: key);
   static String verify = "";
+
   @override
   State<MyPhone> createState() => _MyPhoneState();
 }
@@ -120,20 +121,10 @@ class _MyPhoneState extends State<MyPhone> {
                   child: const Text("Send the code"),
                 ),
               ),
-              const SizedBox(height: 20),
               TextButton(
-                onPressed: () async {
-                  // This part can remain the same
-                  await FirebaseAuth.instance.verifyPhoneNumber(
-                    phoneNumber: '${countryController.text + phone}',
-                    verificationCompleted: (PhoneAuthCredential credential) {},
-                    verificationFailed: (FirebaseAuthException e) {},
-                    codeSent: (String verificationId, int? resendToken) {
-                      MyPhone.verify = verificationId;
-                    },
-                    codeAutoRetrievalTimeout: (String verificationId) {},
-                  );
-                  //Navigator.pushNamed(context, 'Guide');
+                onPressed: () {
+                  Navigator.pushNamed(
+                      context, 'Guide'); // Navigate to Guide page
                 },
                 child: const Text(
                   "Continue without login",

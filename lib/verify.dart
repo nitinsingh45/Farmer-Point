@@ -113,14 +113,28 @@ class _MyVerifyState extends State<MyVerify> {
                     try {
                       PhoneAuthCredential credential =
                           PhoneAuthProvider.credential(
-                              verificationId: MyPhone.verify, smsCode: code);
+                        verificationId: MyPhone.verify,
+                        smsCode: code,
+                      );
 
-                      // Sign the user in (or link) with the credential
+                      // Sign in the user with the credential
                       await auth.signInWithCredential(credential);
+
+                      // Navigate to the Guide page upon successful verification
                       Navigator.pushNamedAndRemoveUntil(
-                          context, "Guide", (route) => false);
+                        context,
+                        'Guide',
+                        (route) => false,
+                      );
                     } catch (e) {
-                      print("wrong otp");
+                      print(
+                          "Error signing in: $e"); // Print the error for debugging
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content:
+                              Text("Failed to verify OTP. Please try again."),
+                        ),
+                      );
                     }
                   },
                   child: const Text("Verify Phone Number"),
